@@ -146,12 +146,12 @@ Proprietary - © 2025 AMLGuard. All rights reserved.
 
 ## 👨‍💻 Developer
 
-**Developed with ❤️ by [bguvava](https://bguvava.github.io/portfolio/)**
+**Developed with ❤️ by [bguvava](https://bguvava.github.io/portfolio/) and NUST TEAM**
 
 ## 📧 Contact
 
-- Email: aml@seczim.co.zw
-- Phone: +263 4 781 444-9
+- Email: brian.guvava@nust.ac.zw / guvava.brian@gmail.com
+- Phone: +263 719333660
 - Website: [seczim.co.zw](https://seczim.co.zw/)
 
 ## 🏢 Client
@@ -162,4 +162,4 @@ Proprietary - © 2025 AMLGuard. All rights reserved.
 
 ---
 
-**Status**: 🚧 In Development - Landing Page Module Complete
+**Status**: 🚧 In Development - Frontend Module Partially Complete
