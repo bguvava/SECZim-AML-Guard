@@ -150,8 +150,8 @@ Proprietary - © 2025 AMLGuard. All rights reserved.
 
 ## 📧 Contact
 
-- Email: aml@seczim.co.zw
-- Phone: +263 4 781 444-9
+- Email: guvava.brian@gmail.com/ brin.guvava@nust.ac.zw
+- Phone: +263 719 333 660
 - Website: [seczim.co.zw](https://seczim.co.zw/)
 
 ## 🏢 Client
