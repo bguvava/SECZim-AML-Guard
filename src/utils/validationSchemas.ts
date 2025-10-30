@@ -249,3 +249,235 @@ export const entityNoteSchema = z.object({
 })
 
 export type EntityNoteData = z.infer<typeof entityNoteSchema>
+
+// ============================================================================
+// SECURITY MANAGEMENT SCHEMAS
+// ============================================================================
+
+/**
+ * IP Address validation patterns
+ */
+const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$/
+
+/**
+ * Add IP to Whitelist Schema
+ */
+export const addIPToWhitelistSchema = z.object({
+  ipAddress: z
+    .string()
+    .min(1, 'IP address is required')
+    .refine(
+      (val) => ipv4Regex.test(val) || cidrRegex.test(val),
+      'Invalid IP address or CIDR notation (e.g., 192.168.1.1 or 192.168.1.0/24)'
+    ),
+  description: z
+    .string()
+    .min(3, 'Description must be at least 3 characters')
+    .max(200, 'Description must be less than 200 characters'),
+  expiryDate: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || new Date(val) > new Date(),
+      'Expiry date must be in the future'
+    ),
+})
+
+export type AddIPToWhitelistData = z.infer<typeof addIPToWhitelistSchema>
+
+/**
+ * Block IP Schema
+ */
+export const blockIPSchema = z.object({
+  ipAddress: z
+    .string()
+    .min(1, 'IP address is required')
+    .refine(
+      (val) => ipv4Regex.test(val),
+      'Invalid IP address format'
+    )
+    .refine(
+      (val) => val !== '127.0.0.1' && !val.startsWith('192.168.'),
+      'Cannot block localhost or local network addresses'
+    ),
+  reason: z
+    .string()
+    .min(10, 'Reason must be at least 10 characters')
+    .max(500, 'Reason must be less than 500 characters'),
+})
+
+export type BlockIPData = z.infer<typeof blockIPSchema>
+
+/**
+ * Auto-Block Settings Schema
+ */
+export const autoBlockSettingsSchema = z.object({
+  threshold: z
+    .number()
+    .int('Must be a whole number')
+    .min(3, 'Threshold must be at least 3 attempts')
+    .max(20, 'Threshold must be at most 20 attempts'),
+  timeWindow: z
+    .number()
+    .int('Must be a whole number')
+    .min(1, 'Time window must be at least 1 minute')
+    .max(60, 'Time window must be at most 60 minutes'),
+})
+
+export type AutoBlockSettingsData = z.infer<typeof autoBlockSettingsSchema>
+
+/**
+ * Add Firewall Rule Schema
+ */
+export const addFirewallRuleSchema = z.object({
+  priority: z
+    .number()
+    .int('Priority must be a whole number')
+    .min(1, 'Priority must be at least 1')
+    .max(100, 'Priority must be at most 100'),
+  name: z
+    .string()
+    .min(3, 'Rule name must be at least 3 characters')
+    .max(100, 'Rule name must be less than 100 characters'),
+  protocol: z.enum(['TCP', 'UDP', 'ICMP', 'All'], {
+    errorMap: () => ({ message: 'Please select a protocol' }),
+  }),
+  sourceIPs: z
+    .array(z.string())
+    .min(1, 'At least one source IP is required')
+    .refine(
+      (ips) => ips.every((ip) => ipv4Regex.test(ip) || cidrRegex.test(ip)),
+      'All source IPs must be valid IP addresses or CIDR notation'
+    ),
+  destinationIPs: z
+    .array(z.string())
+    .min(1, 'At least one destination IP is required')
+    .refine(
+      (ips) => ips.every((ip) => ipv4Regex.test(ip) || cidrRegex.test(ip)),
+      'All destination IPs must be valid IP addresses or CIDR notation'
+    ),
+  sourcePorts: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (!val) return true
+        const ports = val.split(',').map(p => p.trim())
+        return ports.every(port => {
+          // Check if it's a single port or range
+          if (port.includes('-')) {
+            const [start, end] = port.split('-').map(p => parseInt(p.trim()))
+            return start >= 1 && start <= 65535 && end >= 1 && end <= 65535 && start <= end
+          }
+          const portNum = parseInt(port)
+          return portNum >= 1 && portNum <= 65535
+        })
+      },
+      'Invalid port format. Use comma-separated ports or ranges (e.g., 80, 443, 8080-8090)'
+    ),
+  destinationPorts: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (!val) return true
+        const ports = val.split(',').map(p => p.trim())
+        return ports.every(port => {
+          if (port.includes('-')) {
+            const [start, end] = port.split('-').map(p => parseInt(p.trim()))
+            return start >= 1 && start <= 65535 && end >= 1 && end <= 65535 && start <= end
+          }
+          const portNum = parseInt(port)
+          return portNum >= 1 && portNum <= 65535
+        })
+      },
+      'Invalid port format. Use comma-separated ports or ranges (e.g., 80, 443, 8080-8090)'
+    ),
+  action: z.enum(['Allow', 'Deny'], {
+    errorMap: () => ({ message: 'Please select an action' }),
+  }),
+  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
+})
+
+export type AddFirewallRuleData = z.infer<typeof addFirewallRuleSchema>
+
+/**
+ * Vulnerability Scan Options Schema
+ */
+export const vulnerabilityScanSchema = z.object({
+  scanType: z.enum(['Quick', 'Full', 'Custom'], {
+    errorMap: () => ({ message: 'Please select a scan type' }),
+  }),
+  targetComponents: z.array(z.string()).optional(),
+})
+
+export type VulnerabilityScanOptionsData = z.infer<typeof vulnerabilityScanSchema>
+
+/**
+ * Two-Factor Settings Schema
+ */
+export const twoFactorSettingsSchema = z.object({
+  enforcement: z.enum(['None', 'Admins Only', 'Supervisors Only', 'All Users'], {
+    errorMap: () => ({ message: 'Please select an enforcement level' }),
+  }),
+  allowRememberDevice: z.boolean().default(true),
+  trustPeriod: z
+    .number()
+    .int('Must be a whole number')
+    .min(1, 'Trust period must be at least 1 day')
+    .max(90, 'Trust period must be at most 90 days'),
+})
+
+export type TwoFactorSettingsData = z.infer<typeof twoFactorSettingsSchema>
+
+/**
+ * Session Management Settings Schema
+ */
+export const sessionManagementSchema = z.object({
+  maxConcurrentSessions: z
+    .number()
+    .int('Must be a whole number')
+    .min(1, 'Must allow at least 1 concurrent session')
+    .max(10, 'Maximum 10 concurrent sessions allowed'),
+  sessionTimeout: z
+    .number()
+    .int('Must be a whole number')
+    .min(15, 'Session timeout must be at least 15 minutes')
+    .max(1440, 'Session timeout must be at most 24 hours (1440 minutes)'),
+  requireReauthentication: z.boolean().default(true),
+})
+
+export type SessionManagementData = z.infer<typeof sessionManagementSchema>
+
+/**
+ * Security Report Options Schema
+ */
+export const securityReportSchema = z.object({
+  reportType: z.enum(['Daily', 'Weekly', 'Monthly', 'Custom'], {
+    errorMap: () => ({ message: 'Please select a report type' }),
+  }),
+  dateRange: z
+    .object({
+      start: z.string().min(1, 'Start date is required'),
+      end: z.string().min(1, 'End date is required'),
+    })
+    .refine(
+      (data) => new Date(data.end) >= new Date(data.start),
+      {
+        message: 'End date must be after or equal to start date',
+        path: ['end'],
+      }
+    ),
+  includeSections: z.object({
+    securityEvents: z.boolean().default(true),
+    failedLogins: z.boolean().default(true),
+    ipManagement: z.boolean().default(true),
+    vulnerabilities: z.boolean().default(true),
+    compliance: z.boolean().default(true),
+    firewallRules: z.boolean().default(true),
+    recommendations: z.boolean().default(true),
+  }),
+})
+
+export type SecurityReportOptionsData = z.infer<typeof securityReportSchema>

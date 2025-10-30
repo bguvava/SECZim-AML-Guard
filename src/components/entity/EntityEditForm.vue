@@ -256,7 +256,7 @@ const formData = ref({
   complianceOfficerPhone: '',
   numberOfEmployees: 0,
   annualRevenue: undefined as number | undefined,
-  servicesOffered: '',
+  servicesOffered: [] as string[],
 })
 
 // Watch for entity changes to populate form

@@ -46,6 +46,12 @@ export const adminNavigation: NavigationItem[] = [
     route: '/admin/supervisors',
   },
   {
+    id: 'admin-security',
+    label: 'Security Management',
+    icon: Shield,
+    route: '/admin/security-management',
+  },
+  {
     id: 'admin-reports',
     label: 'Reports',
     icon: FileText,

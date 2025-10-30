@@ -55,11 +55,55 @@ const routes: RouteRecordRaw[] = [
       allowedRoles: ['Administrator'],
     },
   },
+  // Admin Security Management
+  {
+    path: '/admin/security-management',
+    name: 'admin-security-management',
+    component: () => import('@/views/admin/SecurityManagement.vue'),
+    meta: {
+      title: 'Security Management - AMLGuard',
+      requiresAuth: true,
+      allowedRoles: ['Administrator'],
+    },
+  },
+  // Admin Supervisor Monitor
+  {
+    path: '/admin/supervisor-monitor',
+    name: 'admin-supervisor-monitor',
+    component: () => import('@/views/admin/supervisor-monitor/SupervisorMonitor.vue'),
+    meta: {
+      title: 'Supervisor Activity Monitor - AMLGuard',
+      requiresAuth: true,
+      allowedRoles: ['Administrator'],
+    },
+  },
+  // Admin Supervisor Detail
+  {
+    path: '/admin/supervisor-monitor/:id',
+    name: 'admin-supervisor-detail',
+    component: () => import('@/views/admin/supervisor-monitor/SupervisorDetailView.vue'),
+    meta: {
+      title: 'Supervisor Details - AMLGuard',
+      requiresAuth: true,
+      allowedRoles: ['Administrator'],
+    },
+  },
+  // Admin Audit Trail
+  {
+    path: '/admin/audit-trail',
+    name: 'admin-audit-trail',
+    component: () => import('@/views/admin/audit-trail/AuditTrail.vue'),
+    meta: {
+      title: 'Audit Trail - AMLGuard',
+      requiresAuth: true,
+      allowedRoles: ['Administrator', 'Auditor', 'Compliance Officer'],
+    },
+  },
   // Supervisor Dashboard
   {
     path: '/supervisor/dashboard',
     name: 'supervisor-dashboard',
-    component: () => import('@/views/supervisor/Dashboard.vue'),
+    component: () => import('@/views/supervisor/SupervisorDashboard.vue'),
     meta: {
       title: 'Supervisor Dashboard - AMLGuard',
       requiresAuth: true,
