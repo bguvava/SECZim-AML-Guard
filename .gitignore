@@ -61,3 +61,6 @@ package-lock.json
 
 # Vite timestamp files
 vite.config.ts.timestamp-*
+
+# Exclude prompts folder from uploads
+.github/prompts/

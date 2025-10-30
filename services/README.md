@@ -200,13 +200,6 @@ npm run test:coverage
 - Check test database is available
 - Run migrations before tests
 
-### Port Already in Use
-```bash
-# Kill process on port 3000
-lsof -i :3000
-kill -9 <PID>
-```
-
 ## 📞 Support & Questions
 
 - Check [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines
