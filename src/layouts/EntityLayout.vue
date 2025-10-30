@@ -1,0 +1,13 @@
+<template>
+  <DashboardLayout :navigation-items="navigationItems">
+    <slot />
+  </DashboardLayout>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import DashboardLayout from './DashboardLayout.vue'
+import { entityNavigation } from '@/config/navigation'
+
+const navigationItems = computed(() => entityNavigation)
+</script>
