@@ -2,7 +2,7 @@
 
 Node.js/Express service powering the Supervision & Monitoring module.
 
-## Setup
+## Setup (Neon PostgreSQL)
 
 1. Copy .env
 
@@ -16,26 +16,38 @@ cp .env.example .env
 pnpm install
 ```
 
-3. Run migrations (script)
+3. Set your Neon connection string in `.env`:
+
+```
+DATABASE_URL=postgresql://<user>:<password>@<host>.neon.tech/<db>?sslmode=require
+# Optional explicit switch (handled automatically for neon.tech URLs)
+# PGSSL=true
+```
+
+4. Run migrations (script)
 
 ```
 pnpm run migrate
 ```
 
-4. (Optional) Seed demo data
+5. (Optional) Seed demo data
 
 ```
 pnpm run seed
 ```
 
-5. Start dev
+6. Start dev
 
 ```
-pnpm add -D tsx
 pnpm run dev
 ```
 
 Swagger UI: http://localhost:4001/api/docs
+
+### Notes
+
+- Local Postgres via docker-compose has been deprecated in favor of Neon.
+- SSL is enabled automatically for Neon URLs; you can force it by setting `PGSSL=true`.
 
 ## Endpoints
 

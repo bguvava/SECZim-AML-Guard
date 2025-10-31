@@ -1,6 +1,6 @@
-# Using the VS Code PostgreSQL extension
+# Using a local PostgreSQL (optional)
 
-You can provision and seed the local database entirely from VS Code using the PostgreSQL extension.
+Neon is the recommended database for this project. If you prefer to use a local PostgreSQL instance for development, you can provision and seed it from VS Code using the PostgreSQL extension.
 
 ## Prerequisites
 - PostgreSQL server installed locally (default port 5432)
@@ -22,7 +22,7 @@ You can provision and seed the local database entirely from VS Code using the Po
    - Still connected to `amlguard`, open and run `sql/seed.sql`.
 
 4. Start the backend
-   - Ensure `services/supervision_module/.env` has a working `DATABASE_URL`.
+   - Ensure `services/supervision_module/.env` has a working `DATABASE_URL` (for Neon, include `?sslmode=require`).
    - Start the backend in dev mode.
 
-Once complete, the `/api/institutions` endpoint should return rows from Postgres.
+Once complete, the `/api/institutions` endpoint should return rows from your database (Neon or local Postgres).

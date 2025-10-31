@@ -13,6 +13,7 @@ import inspectionsRoute from './routes/inspections.js'
 import riskAssessmentRoute from './routes/riskAssessment.js'
 import dashboardRoute from './routes/dashboard.js'
 
+
 const app: express.Express = express()
 app.use(cors())
 app.use(helmet())
@@ -48,6 +49,7 @@ app.use('/api/surveillance', surveillanceRoute)
 app.use('/api/inspections', inspectionsRoute)
 app.use('/api/risk-assessment', riskAssessmentRoute)
 app.use('/api/dashboard', dashboardRoute)
+
 
 // Error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

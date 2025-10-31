@@ -9,7 +9,12 @@ async function main() {
   const sqlPath = join(__dirname, '..', '..', 'migrations', '001_init.sql')
   const sql = readFileSync(sqlPath, 'utf-8')
 
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const isNeon = (process.env.DATABASE_URL || '').includes('neon.tech')
+  const sslOption =
+    process.env.PGSSL?.toLowerCase() === 'true' || isNeon
+      ? { rejectUnauthorized: false }
+      : undefined
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: sslOption })
   const client = await pool.connect()
   try {
     console.log('[migrate] applying 001_init.sql')
