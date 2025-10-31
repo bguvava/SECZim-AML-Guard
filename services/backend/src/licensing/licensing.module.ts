@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LicensingController } from './licensing.controller';
-import { LicensingService } from './sec-zim-aml/src/licensing/licensing.service';
+import { LicensingService } from './licensing.service';
 
 @Module({
   controllers: [LicensingController],

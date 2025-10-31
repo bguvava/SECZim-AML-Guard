@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Smi {
+  id        String   @id @default(cuid())
+  name      String
+  licenseNo String   @unique
+  subsector String?
+  // other fields
+  breaches  Breach[]
+}
+
+model Breach {
+  id            String   @id @default(cuid())
+  smiId         String
+  smi           Smi      @relation(fields:[smiId], references:[id])
+  licenseId     String?
+  category      String
+  severity      String
+  description   String
+  occurredAt    DateTime
+  reportedBy    String
+  status        String
+  recurrence    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  actions       EnforcementAction[]
+  followUps     FollowUp[]
+}
+
+model EnforcementAction {
+  id            String   @id @default(cuid())
+  breachId      String
+  breach        Breach   @relation(fields:[breachId], references:[id])
+  type          String
+  amount        Float?
+  notes         String?
+  effectiveFrom DateTime?
+  effectiveTo   DateTime?
+  status        String
+  createdAt     DateTime @default(now())
+}
+model LicenseBreach {
+  id             Int       @id @default(autoincrement())
+  entityName     String
+  entityId       String
+  breachType     String
+  severity       String
+  description    String
+  status         String    @default("active")
+  dateReported   DateTime  @default(now())
+  penalty        Float?
+  recommendation String?
+}
+model FollowUp {
+  id          String   @id @default(cuid())
+  breachId    String
+  breach      Breach   @relation(fields: [breachId], references: [id])
+  notes       String?
+  actionTaken String?
+  followUpBy  String?
+  dueDate     DateTime?
+  completedAt DateTime?
+  status      String    @default("Pending")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

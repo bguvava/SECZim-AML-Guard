@@ -1,36 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { Licensing } from './licensing.entity';
+import { PrismaService } from '../../prisma/prisma.service';
+import { LicenseBreach } from '@prisma/client';
 
 @Injectable()
 export class LicensingService {
-  private licenses: Licensing[] = [];
-  private idCounter = 1;
+  constructor(private prisma: PrismaService) {}
 
-  // Create a new licensing breach
-  create(breachData: Omit<Licensing, 'id' | 'dateReported'>): Licensing {
-    const newBreach: Licensing = {
-      id: this.idCounter++,
-      dateReported: new Date(),
-      ...breachData,
-    };
-    this.licenses.push(newBreach);
-    return newBreach;
+  // Create a new license breach record
+  async create(data: Omit<LicenseBreach, 'id' | 'dateReported'>): Promise<LicenseBreach> {
+    return this.prisma.licenseBreach.create({
+      data: {
+        ...data,
+        status: data.status ?? 'active', // default if missing
+        dateReported: new Date(),
+      },
+    });
   }
 
-  // Get all breaches
-  findAll(): Licensing[] {
-    return this.licenses;
+  async findAll(): Promise<LicenseBreach[]> {
+    return this.prisma.licenseBreach.findMany({ orderBy: { dateReported: 'desc' } });
   }
 
-  // Get one breach by ID
-  findOne(id: number): Licensing | undefined {
-    return this.licenses.find((b) => b.id === id);
+  async findOne(id: number): Promise<LicenseBreach | null> {
+    return this.prisma.licenseBreach.findUnique({ where: { id } });
   }
 
-  // Cancel a license (update status)
-  cancel(id: number): Licensing | undefined {
-    const breach = this.findOne(id);
-    if (breach) breach.status = 'cancelled';
-    return breach;
+  async cancel(id: number): Promise<LicenseBreach | null> {
+    return this.prisma.licenseBreach.update({ where: { id }, data: { status: 'cancelled' } });
+  }
+
+  async updateActions(
+    id: number,
+    penalty?: number,
+    recommendation?: string,
+  ): Promise<LicenseBreach | null> {
+    return this.prisma.licenseBreach.update({
+      where: { id },
+      data: { penalty, recommendation },
+    });
+  }
+
+  async findActive(): Promise<LicenseBreach[]> {
+    return this.prisma.licenseBreach.findMany({
+      where: { status: 'active' },
+      orderBy: { dateReported: 'desc' },
+    });
+  }
+
+  async getStats() {
+    const [total, active, cancelled, avg] = await Promise.all([
+      this.prisma.licenseBreach.count(),
+      this.prisma.licenseBreach.count({ where: { status: 'active' } }),
+      this.prisma.licenseBreach.count({ where: { status: 'cancelled' } }),
+      this.prisma.licenseBreach.aggregate({ _avg: { penalty: true } }),
+    ]);
+    return { total, active, cancelled, avgPenalty: avg._avg.penalty };
   }
 }
