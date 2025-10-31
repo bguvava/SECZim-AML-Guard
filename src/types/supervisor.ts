@@ -38,6 +38,9 @@ export enum CaseStatus {
   DEFERRED = 'DEFERRED',
   ESCALATED = 'ESCALATED',
   CLOSED = 'CLOSED',
+  // Added to match usages in views
+  COMPLETED = 'COMPLETED',
+  OVERDUE = 'OVERDUE',
 }
 
 /**
@@ -165,6 +168,13 @@ export interface Supervisor {
   maxCaseLoad: number
   createdAt: Date
   updatedAt: Date
+  // Optional fields referenced in views for display convenience
+  location?: string
+  hireDate?: Date
+  languages?: string[]
+  activeCases?: number
+  utilizationPercentage?: number
+  metrics?: PerformanceMetrics
 }
 
 /**
@@ -178,6 +188,7 @@ export interface SupervisorCase {
   entityId: string
   entityName: string
   caseType: CaseType
+  type?: string // backward compatibility
   status: CaseStatus
   priority: CasePriority
   assignedDate: Date
@@ -225,6 +236,11 @@ export interface PerformanceMetrics {
   qualityScore: number // 0-100
   decisionConsistencyScore: number // 0-100
   accuracyScore: number // 0-100
+  consistencyScore?: number // 0-100 (alias for decisionConsistencyScore)
+  turnaroundScore?: number // 0-100
+  satisfactionScore?: number // 0-100
+  complianceScore?: number // 0-100
+  escalationRate?: number // percentage
   
   // Inspection metrics
   scheduledInspections: number
@@ -252,6 +268,8 @@ export interface SupervisorDecision {
   decisionDate: Date
   responseTime: number // hours from assignment
   notes: string
+  justification?: string
+  outcome?: string
   attachments?: string[]
   createdAt: Date
 }
@@ -389,12 +407,23 @@ export interface RebalancingSuggestion {
  */
 export interface PerformanceTrendData {
   supervisorId: string
+  supervisorName?: string
   date: Date
   casesHandled: number
   avgResponseTime: number
   qualityScore: number
   approvalRate: number
   completionRate: number
+  trends?: {
+    month: Date
+    metrics: {
+      qualityScore: number
+      avgResponseTime: number
+      approvalRate: number
+      completionRate: number
+      casesHandled: number
+    }
+  }[]
 }
 
 /**

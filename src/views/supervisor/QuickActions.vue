@@ -35,9 +35,9 @@ import { Button } from '@/components/ui/button'
 import { Zap, CalendarPlus, FileCheck, FileText, Send } from 'lucide-vue-next'
 
 defineEmits<{
-  'schedule-inspection': []
+  'schedule-inspection': [data?: any]
   'review-application': []
-  'generate-report': []
-  'send-notice': []
+  'generate-report': [config?: any]
+  'send-notice': [config?: any]
 }>()
 </script>

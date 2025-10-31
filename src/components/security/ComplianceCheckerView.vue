@@ -1,63 +1,59 @@
 <template>
-  <div class="compliance-checker-view">
-    <div class="view-header">
-      <h2 class="view-title">Compliance & 2FA Settings</h2>
-      <p class="view-subtitle">Manage two-factor authentication and security compliance</p>
-    </div>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-800">Compliance & 2FA Settings</h1>
+      <p class="text-sm text-gray-500 mt-1">Manage two-factor authentication and security compliance.</p>
+    </header>
 
     <!-- Compliance Score Card -->
-    <div class="compliance-score-card">
-      <div class="score-content">
-        <div class="score-circle">
-          <svg viewBox="0 0 120 120" class="score-svg">
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+      <div class="flex items-center gap-6 md:gap-10">
+        <div class="relative w-32 h-32">
+          <svg viewBox="0 0 120 120" class="w-full h-full">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#e2e8f0" stroke-width="12" />
             <circle
               cx="60"
               cy="60"
-              r="50"
-              fill="none"
-              stroke="#e2e8f0"
-              stroke-width="10"
-            />
-            <circle
-              cx="60"
-              cy="60"
-              r="50"
+              r="54"
               fill="none"
               :stroke="getComplianceColor(securityCompliance?.overallScore || 0)"
-              stroke-width="10"
+              stroke-width="12"
               stroke-linecap="round"
               :stroke-dasharray="circumference"
               :stroke-dashoffset="scoreOffset"
-              transform="rotate(-90 60 60)"
+              class="transform -rotate-90 origin-center transition-all duration-500"
             />
           </svg>
-          <div class="score-text">
-            <div class="score-value">{{ securityCompliance?.overallScore || 0 }}%</div>
-            <div class="score-label">Compliance</div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-3xl font-bold text-gray-800">{{ securityCompliance?.overallScore || 0 }}%</span>
+            <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Compliance</span>
           </div>
         </div>
-        <div class="score-details">
-          <h3 class="score-title">Overall Compliance Score</h3>
-          <p class="score-description">
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold text-gray-800">Overall Compliance Score</h2>
+          <p class="text-base text-gray-600 mt-1">
             {{ getComplianceStatus(securityCompliance?.overallScore || 0) }}
           </p>
-          <div class="score-status">
-            <i :class="['fas', getComplianceIcon(securityCompliance?.overallScore || 0)]"></i>
-            <span>{{ getComplianceMessage(securityCompliance?.overallScore || 0) }}</span>
+          <div
+            class="mt-4 flex items-center gap-3 p-4 rounded-lg"
+            :class="getComplianceBannerClass(securityCompliance?.overallScore || 0)"
+          >
+            <i :class="['text-xl', getComplianceIcon(securityCompliance?.overallScore || 0)]"></i>
+            <span class="text-sm font-medium">{{ getComplianceMessage(securityCompliance?.overallScore || 0) }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="content-grid">
+    <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
       <!-- Two-Factor Authentication Settings -->
-      <div class="settings-section">
-        <div class="section-header">
-          <h3 class="section-title">
-            <i class="fas fa-shield-alt"></i>
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-6">
+          <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-shield-alt text-blue-500"></i>
             Two-Factor Authentication
           </h3>
-          <p class="section-subtitle">Configure 2FA enforcement and trusted device settings</p>
+          <p class="text-sm text-gray-500 mt-1">Configure 2FA enforcement and trusted device settings.</p>
         </div>
 
         <Form
@@ -65,238 +61,146 @@
           :initial-values="twoFactorSettings"
           @submit="handleUpdateTwoFactorSettings"
           v-slot="{ isSubmitting }"
+          class="space-y-6"
         >
-          <div class="form-content">
-            <div class="form-group">
-              <label class="form-label">
-                Enforcement Level
-                <span class="required">*</span>
-              </label>
-              <Field name="enforcement" as="select" class="form-select">
-                <option value="None">None - Optional for all users</option>
-                <option value="Admins Only">Admins Only - Required for administrators</option>
-                <option value="Supervisors Only">Supervisors Only - Required for supervisors</option>
-                <option value="All Users">All Users - Required for everyone</option>
-              </Field>
-              <ErrorMessage name="enforcement" class="error-message" />
-              <p class="form-help">Select which users are required to use two-factor authentication</p>
-            </div>
-
-            <div class="form-group">
-              <label class="checkbox-label">
-                <Field name="allowRememberDevice" type="checkbox" class="form-checkbox" />
-                <span>Allow "Remember this device"</span>
-              </label>
-              <p class="form-help">
-                Users can opt to skip 2FA on trusted devices for a specified period
-              </p>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">
-                Trust Period (days)
-                <span class="required">*</span>
-              </label>
-              <Field
-                name="trustPeriod"
-                type="number"
-                class="form-input"
-                placeholder="Enter trust period in days"
-              />
-              <ErrorMessage name="trustPeriod" class="error-message" />
-              <p class="form-help">
-                Number of days a device remains trusted before requiring 2FA again
-              </p>
-            </div>
-
-            <button type="submit" class="btn-primary" :disabled="isSubmitting">
-              <i class="fas fa-save"></i>
-              {{ isSubmitting ? 'Saving...' : 'Save Settings' }}
-            </button>
+          <div>
+            <label for="enforcement" class="block text-sm font-medium text-gray-700 mb-1">
+              Enforcement Level <span class="text-red-500">*</span>
+            </label>
+            <Field
+              id="enforcement"
+              name="enforcement"
+              as="select"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="None">None - Optional for all users</option>
+              <option value="Admins Only">Admins Only - Required for administrators</option>
+              <option value="Supervisors Only">Supervisors Only - Required for supervisors</option>
+              <option value="All Users">All Users - Required for everyone</option>
+            </Field>
+            <ErrorMessage name="enforcement" class="text-sm text-red-600 mt-1" />
+            <p class="text-xs text-gray-500 mt-1">Select which users are required to use 2FA.</p>
           </div>
+
+          <div class="flex items-center gap-3">
+            <Field
+              id="allowRememberDevice"
+              name="allowRememberDevice"
+              type="checkbox"
+              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div>
+              <label for="allowRememberDevice" class="text-sm font-medium text-gray-700">Allow "Remember this device"</label>
+              <p class="text-xs text-gray-500">Users can skip 2FA on trusted devices.</p>
+            </div>
+          </div>
+
+          <div>
+            <label for="trustPeriod" class="block text-sm font-medium text-gray-700 mb-1">
+              Trust Period (days) <span class="text-red-500">*</span>
+            </label>
+            <Field
+              id="trustPeriod"
+              name="trustPeriod"
+              type="number"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="e.g., 30"
+            />
+            <ErrorMessage name="trustPeriod" class="text-sm text-red-600 mt-1" />
+            <p class="text-xs text-gray-500 mt-1">Days a device remains trusted before requiring 2FA again.</p>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition disabled:opacity-50"
+            :disabled="isSubmitting"
+          >
+            <i class="fas fa-save"></i>
+            {{ isSubmitting ? 'Saving...' : 'Save Settings' }}
+          </button>
         </Form>
       </div>
 
       <!-- Compliance Checklist -->
-      <div class="compliance-section">
-        <div class="section-header">
-          <h3 class="section-title">
-            <i class="fas fa-clipboard-check"></i>
+      <div class="lg:col-span-3 bg-white rounded-xl shadow-lg p-8">
+        <div class="mb-6">
+          <h3 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-clipboard-check text-blue-500"></i>
             Security Policy Compliance
           </h3>
-          <p class="section-subtitle">Review compliance status for all security policies</p>
+          <p class="text-sm text-gray-500 mt-1">Review compliance status for all security policies.</p>
         </div>
 
-        <div v-if="securityCompliance" class="compliance-list">
+        <div v-if="securityCompliance" class="space-y-4">
           <!-- Password Policy -->
-          <div class="compliance-item">
-            <div class="item-header">
-              <div class="item-title-row">
-                <i :class="['compliance-icon', securityCompliance.passwordPolicy.compliant ? 'fas fa-check-circle compliant' : 'fas fa-times-circle non-compliant']"></i>
-                <h4 class="item-title">Password Policy</h4>
+          <details class="group border border-gray-200 rounded-lg p-4 transition-all hover:bg-gray-50">
+            <summary class="flex justify-between items-center cursor-pointer">
+              <div class="flex items-center gap-3">
+                <i
+                  :class="[
+                    'text-xl',
+                    securityCompliance.passwordPolicy.compliant ? 'fas fa-check-circle text-green-500' : 'fas fa-times-circle text-red-500'
+                  ]"
+                ></i>
+                <h4 class="font-semibold text-gray-700">Password Policy</h4>
               </div>
-              <span :class="['compliance-badge', securityCompliance.passwordPolicy.compliant ? 'compliant' : 'non-compliant']">
-                {{ securityCompliance.passwordPolicy.compliant ? 'Compliant' : 'Non-Compliant' }}
-              </span>
+              <div class="flex items-center gap-4">
+                <span
+                  class="px-3 py-1 text-xs font-bold uppercase rounded-full"
+                  :class="[
+                    securityCompliance.passwordPolicy.compliant ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  ]"
+                >
+                  {{ securityCompliance.passwordPolicy.compliant ? 'Compliant' : 'Non-Compliant' }}
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
+              </div>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">Minimum Length:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.minLength }} characters</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Uppercase:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.requireUppercase ? 'Yes' : 'No' }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Lowercase:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.requireLowercase ? 'Yes' : 'No' }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Numbers:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.requireNumbers ? 'Yes' : 'No' }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Special Chars:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.requireSpecialChars ? 'Yes' : 'No' }}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Expiry:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.expiryDays }} days</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">History:</span> <span class="font-medium text-gray-800">{{ securityCompliance.passwordPolicy.historyCount }} passwords</span></div>
             </div>
-            <div class="item-details">
-              <div class="detail-row">
-                <span class="detail-label">Minimum Length:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.minLength }} characters</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Uppercase Required:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.requireUppercase ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Lowercase Required:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.requireLowercase ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Numbers Required:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.requireNumbers ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Special Characters:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.requireSpecialChars ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Expiry Period:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.expiryDays }} days</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">History Count:</span>
-                <span class="detail-value">{{ securityCompliance.passwordPolicy.historyCount }} passwords</span>
-              </div>
-            </div>
-          </div>
+          </details>
 
-          <!-- Two-Factor Authentication -->
-          <div class="compliance-item">
-            <div class="item-header">
-              <div class="item-title-row">
-                <i :class="['compliance-icon', securityCompliance.twoFactorAuth.compliant ? 'fas fa-check-circle compliant' : 'fas fa-times-circle non-compliant']"></i>
-                <h4 class="item-title">Two-Factor Authentication</h4>
+          <!-- Other policies... -->
+          <details v-for="(policy, key) in otherPolicies" :key="key" class="group border border-gray-200 rounded-lg p-4 transition-all hover:bg-gray-50">
+            <summary class="flex justify-between items-center cursor-pointer">
+              <div class="flex items-center gap-3">
+                <i
+                  :class="[
+                    'text-xl',
+                    policy.compliant ? 'fas fa-check-circle text-green-500' : 'fas fa-times-circle text-red-500'
+                  ]"
+                ></i>
+                <h4 class="font-semibold text-gray-700">{{ policy.title }}</h4>
               </div>
-              <span :class="['compliance-badge', securityCompliance.twoFactorAuth.compliant ? 'compliant' : 'non-compliant']">
-                {{ securityCompliance.twoFactorAuth.compliant ? 'Compliant' : 'Non-Compliant' }}
-              </span>
-            </div>
-            <div class="item-details">
-              <div class="detail-row">
-                <span class="detail-label">Enabled:</span>
-                <span class="detail-value">{{ securityCompliance.twoFactorAuth.enabled ? 'Yes' : 'No' }}</span>
+              <div class="flex items-center gap-4">
+                <span
+                  class="px-3 py-1 text-xs font-bold uppercase rounded-full"
+                  :class="[
+                    policy.compliant ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  ]"
+                >
+                  {{ policy.compliant ? 'Compliant' : 'Non-Compliant' }}
+                </span>
+                <i class="fas fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
               </div>
-              <div class="detail-row">
-                <span class="detail-label">Enforcement:</span>
-                <span class="detail-value">{{ securityCompliance.twoFactorAuth.enforcement }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Encryption -->
-          <div class="compliance-item">
-            <div class="item-header">
-              <div class="item-title-row">
-                <i :class="['compliance-icon', securityCompliance.encryption.compliant ? 'fas fa-check-circle compliant' : 'fas fa-times-circle non-compliant']"></i>
-                <h4 class="item-title">Data Encryption</h4>
-              </div>
-              <span :class="['compliance-badge', securityCompliance.encryption.compliant ? 'compliant' : 'non-compliant']">
-                {{ securityCompliance.encryption.compliant ? 'Compliant' : 'Non-Compliant' }}
-              </span>
-            </div>
-            <div class="item-details">
-              <div class="detail-row">
-                <span class="detail-label">Data at Rest:</span>
-                <span class="detail-value">{{ securityCompliance.encryption.dataAtRest ? 'Encrypted' : 'Not Encrypted' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Data in Transit:</span>
-                <span class="detail-value">{{ securityCompliance.encryption.dataInTransit ? 'Encrypted' : 'Not Encrypted' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Algorithm:</span>
-                <span class="detail-value">{{ securityCompliance.encryption.algorithm }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Key Length:</span>
-                <span class="detail-value">{{ securityCompliance.encryption.keyLength }} bits</span>
+            </summary>
+            <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+              <div v-for="(detail, index) in policy.details" :key="index" class="flex justify-between">
+                <span class="text-gray-500">{{ detail.label }}:</span>
+                <span class="font-medium text-gray-800">{{ detail.value }}</span>
               </div>
             </div>
-          </div>
-
-          <!-- Backups -->
-          <div class="compliance-item">
-            <div class="item-header">
-              <div class="item-title-row">
-                <i :class="['compliance-icon', securityCompliance.backups.compliant ? 'fas fa-check-circle compliant' : 'fas fa-times-circle non-compliant']"></i>
-                <h4 class="item-title">Backup Policy</h4>
-              </div>
-              <span :class="['compliance-badge', securityCompliance.backups.compliant ? 'compliant' : 'non-compliant']">
-                {{ securityCompliance.backups.compliant ? 'Compliant' : 'Non-Compliant' }}
-              </span>
-            </div>
-            <div class="item-details">
-              <div class="detail-row">
-                <span class="detail-label">Enabled:</span>
-                <span class="detail-value">{{ securityCompliance.backups.enabled ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Frequency:</span>
-                <span class="detail-value">{{ securityCompliance.backups.frequency }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Last Backup:</span>
-                <span class="detail-value">{{ securityCompliance.backups.lastBackup ? formatDate(securityCompliance.backups.lastBackup) : 'Never' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Retention:</span>
-                <span class="detail-value">{{ securityCompliance.backups.retentionDays }} days</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Offsite Backup:</span>
-                <span class="detail-value">{{ securityCompliance.backups.offsite ? 'Yes' : 'No' }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Logging -->
-          <div class="compliance-item">
-            <div class="item-header">
-              <div class="item-title-row">
-                <i :class="['compliance-icon', securityCompliance.logging.compliant ? 'fas fa-check-circle compliant' : 'fas fa-times-circle non-compliant']"></i>
-                <h4 class="item-title">Audit Logging</h4>
-              </div>
-              <span :class="['compliance-badge', securityCompliance.logging.compliant ? 'compliant' : 'non-compliant']">
-                {{ securityCompliance.logging.compliant ? 'Compliant' : 'Non-Compliant' }}
-              </span>
-            </div>
-            <div class="item-details">
-              <div class="detail-row">
-                <span class="detail-label">Enabled:</span>
-                <span class="detail-value">{{ securityCompliance.logging.enabled ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Retention:</span>
-                <span class="detail-value">{{ securityCompliance.logging.retentionDays }} days</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Security Events:</span>
-                <span class="detail-value">{{ securityCompliance.logging.includesSecurityEvents ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Data Access:</span>
-                <span class="detail-value">{{ securityCompliance.logging.includesDataAccess ? 'Yes' : 'No' }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">System Changes:</span>
-                <span class="detail-value">{{ securityCompliance.logging.includesSystemChanges ? 'Yes' : 'No' }}</span>
-              </div>
-            </div>
-          </div>
+          </details>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -310,7 +214,7 @@ import { format } from 'date-fns'
 const { twoFactorSettings, securityCompliance, updateTwoFactorSettings } = useSecurityManagement()
 
 // SVG circle calculations
-const radius = 50
+const radius = 54
 const circumference = 2 * Math.PI * radius
 
 const scoreOffset = computed(() => {
@@ -319,15 +223,15 @@ const scoreOffset = computed(() => {
 })
 
 // Helper functions
-const formatDate = (date: Date): string => {
+const formatDate = (date: Date | string): string => {
   return format(new Date(date), 'MMM dd, yyyy')
 }
 
 const getComplianceColor = (score: number): string => {
-  if (score >= 90) return '#48bb78'
-  if (score >= 70) return '#4299e1'
-  if (score >= 50) return '#ecc94b'
-  return '#f56565'
+  if (score >= 90) return '#10B981' // green-500
+  if (score >= 70) return '#3B82F6' // blue-500
+  if (score >= 50) return '#F59E0B' // yellow-500
+  return '#EF4444' // red-500
 }
 
 const getComplianceStatus = (score: number): string => {
@@ -338,386 +242,75 @@ const getComplianceStatus = (score: number): string => {
 }
 
 const getComplianceIcon = (score: number): string => {
-  if (score >= 90) return 'fa-check-circle'
-  if (score >= 70) return 'fa-info-circle'
-  if (score >= 50) return 'fa-exclamation-triangle'
-  return 'fa-times-circle'
+  if (score >= 90) return 'fas fa-check-circle text-green-600'
+  if (score >= 70) return 'fas fa-info-circle text-blue-600'
+  if (score >= 50) return 'fas fa-exclamation-triangle text-yellow-600'
+  return 'fas fa-times-circle text-red-600'
+}
+
+const getComplianceBannerClass = (score: number): string => {
+  if (score >= 90) return 'bg-green-50 text-green-800'
+  if (score >= 70) return 'bg-blue-50 text-blue-800'
+  if (score >= 50) return 'bg-yellow-50 text-yellow-800'
+  return 'bg-red-50 text-red-800'
 }
 
 const getComplianceMessage = (score: number): string => {
-  if (score >= 90) return 'Your system meets or exceeds all security requirements'
-  if (score >= 70) return 'Your system meets most security requirements'
-  if (score >= 50) return 'Some security policies need attention'
-  return 'Critical security policies require immediate action'
+  if (score >= 90) return 'Your system meets or exceeds all security requirements.'
+  if (score >= 70) return 'Your system meets most security requirements.'
+  if (score >= 50) return 'Some security policies need attention.'
+  return 'Critical security policies require immediate action.'
 }
+
+const otherPolicies = computed(() => {
+  if (!securityCompliance.value) return {}
+  return {
+    twoFactorAuth: {
+      title: 'Two-Factor Authentication',
+      compliant: securityCompliance.value.twoFactorAuth.compliant,
+      details: [
+        { label: 'Enabled', value: securityCompliance.value.twoFactorAuth.enabled ? 'Yes' : 'No' },
+        { label: 'Enforcement', value: securityCompliance.value.twoFactorAuth.enforcement },
+      ],
+    },
+    encryption: {
+      title: 'Data Encryption',
+      compliant: securityCompliance.value.encryption.compliant,
+      details: [
+        { label: 'Data at Rest', value: securityCompliance.value.encryption.dataAtRest ? 'Encrypted' : 'Not Encrypted' },
+        { label: 'Data in Transit', value: securityCompliance.value.encryption.dataInTransit ? 'Encrypted' : 'Not Encrypted' },
+        { label: 'Algorithm', value: securityCompliance.value.encryption.algorithm },
+        { label: 'Key Length', value: `${securityCompliance.value.encryption.keyLength} bits` },
+      ],
+    },
+    backups: {
+      title: 'Backup Policy',
+      compliant: securityCompliance.value.backups.compliant,
+      details: [
+        { label: 'Enabled', value: securityCompliance.value.backups.enabled ? 'Yes' : 'No' },
+        { label: 'Frequency', value: securityCompliance.value.backups.frequency },
+        { label: 'Last Backup', value: securityCompliance.value.backups.lastBackup ? formatDate(securityCompliance.value.backups.lastBackup) : 'Never' },
+        { label: 'Retention', value: `${securityCompliance.value.backups.retentionDays} days` },
+        { label: 'Offsite Backup', value: securityCompliance.value.backups.offsite ? 'Yes' : 'No' },
+      ],
+    },
+    logging: {
+      title: 'Audit Logging',
+      compliant: securityCompliance.value.logging.compliant,
+      details: [
+        { label: 'Enabled', value: securityCompliance.value.logging.enabled ? 'Yes' : 'No' },
+        { label: 'Retention', value: `${securityCompliance.value.logging.retentionDays} days` },
+        { label: 'Security Events', value: securityCompliance.value.logging.includesSecurityEvents ? 'Yes' : 'No' },
+        { label: 'Data Access', value: securityCompliance.value.logging.includesDataAccess ? 'Yes' : 'No' },
+        { label: 'System Changes', value: securityCompliance.value.logging.includesSystemChanges ? 'Yes' : 'No' },
+      ],
+    },
+  }
+})
 
 // Actions
 const handleUpdateTwoFactorSettings = async (values: any) => {
   await updateTwoFactorSettings(values)
+  // Optionally, show a success toast message here
 }
 </script>
-
-<style scoped>
-.compliance-checker-view {
-  padding: 1.5rem;
-}
-
-.view-header {
-  margin-bottom: 2rem;
-}
-
-.view-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.5rem;
-}
-
-.view-subtitle {
-  font-size: 0.95rem;
-  color: #718096;
-}
-
-/* Compliance Score Card */
-.compliance-score-card {
-  background: white;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.score-content {
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-}
-
-.score-circle {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  flex-shrink: 0;
-}
-
-.score-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.score-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.score-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  line-height: 1;
-}
-
-.score-label {
-  font-size: 0.75rem;
-  color: #718096;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 0.25rem;
-}
-
-.score-details {
-  flex: 1;
-}
-
-.score-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.5rem;
-}
-
-.score-description {
-  font-size: 1rem;
-  color: #4a5568;
-  margin-bottom: 1rem;
-}
-
-.score-status {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #f7fafc;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  color: #2d3748;
-}
-
-.score-status i {
-  font-size: 1.5rem;
-  color: #4299e1;
-}
-
-/* Content Grid */
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-/* Section Styles */
-.settings-section,
-.compliance-section {
-  background: white;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.section-header {
-  margin-bottom: 2rem;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.5rem;
-}
-
-.section-title i {
-  color: #4299e1;
-}
-
-.section-subtitle {
-  font-size: 0.95rem;
-  color: #718096;
-}
-
-/* Form Styles */
-.form-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #2d3748;
-}
-
-.required {
-  color: #f56565;
-}
-
-.form-input,
-.form-select {
-  padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-}
-
-.form-input:focus,
-.form-select:focus {
-  outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  font-size: 0.95rem;
-  color: #2d3748;
-}
-
-.form-checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
-  cursor: pointer;
-  accent-color: #4299e1;
-}
-
-.form-help {
-  font-size: 0.85rem;
-  color: #718096;
-}
-
-.error-message {
-  font-size: 0.875rem;
-  color: #f56565;
-}
-
-.btn-primary {
-  padding: 0.75rem 1.5rem;
-  background: #4299e1;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #3182ce;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Compliance List */
-.compliance-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.compliance-item {
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  transition: all 0.2s;
-}
-
-.compliance-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.item-title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.compliance-icon {
-  font-size: 1.5rem;
-}
-
-.compliance-icon.compliant {
-  color: #48bb78;
-}
-
-.compliance-icon.non-compliant {
-  color: #f56565;
-}
-
-.item-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1a202c;
-}
-
-.compliance-badge {
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.compliance-badge.compliant {
-  background: #c6f6d5;
-  color: #276749;
-}
-
-.compliance-badge.non-compliant {
-  background: #fed7d7;
-  color: #c53030;
-}
-
-.item-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.95rem;
-}
-
-.detail-label {
-  color: #718096;
-  font-weight: 500;
-}
-
-.detail-value {
-  color: #2d3748;
-  font-weight: 600;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .compliance-checker-view {
-    padding: 1rem;
-  }
-
-  .compliance-score-card {
-    padding: 1.5rem;
-  }
-
-  .score-content {
-    flex-direction: column;
-    gap: 1.5rem;
-    text-align: center;
-  }
-
-  .settings-section,
-  .compliance-section {
-    padding: 1.5rem;
-  }
-
-  .item-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .detail-row {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-}
-</style>

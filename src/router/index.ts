@@ -103,12 +103,19 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/supervisor/dashboard',
     name: 'supervisor-dashboard',
-    component: () => import('@/views/supervisor/SupervisorDashboard.vue'),
+    // Keep the legacy route but redirect to the new supervision module
+    redirect: '/supervision/analytics',
     meta: {
       title: 'Supervisor Dashboard - AMLGuard',
       requiresAuth: true,
       allowedRoles: ['Supervisor'],
     },
+  },
+  // Legacy supervisor root redirect to supervision module
+  {
+    path: '/supervisor',
+    redirect: '/supervision/analytics',
+    meta: { requiresAuth: true, allowedRoles: ['Supervisor', 'Administrator'] },
   },
   // Entity Dashboard
   {
@@ -120,6 +127,80 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
       allowedRoles: ['Entity'],
     },
+  },
+  // Supervision & Monitoring Module
+  {
+    path: '/supervision',
+    name: 'supervision-root',
+    component: () => import('@/views/supervisor/layouts/MainLayout.vue'),
+    meta: {
+      title: 'Supervision & Monitoring - AMLGuard',
+      requiresAuth: true,
+      allowedRoles: ['Supervisor', 'Administrator'],
+    },
+    redirect: '/supervision/analytics',
+    children: [
+      {
+        path: 'analytics',
+        name: 'supervision-analytics',
+        component: () => import('@/views/supervisor/views/AnalyticsDashboardView.vue'),
+        meta: { title: 'Analytics Dashboard - AMLGuard' },
+      },
+      {
+        path: 'inspection-overview',
+        name: 'supervision-inspection-overview',
+        component: () => import('@/views/supervisor/views/InspectionOverviewView.vue'),
+        meta: { title: 'Inspection Overview - AMLGuard' },
+      },
+      {
+        path: 'institutions',
+        name: 'supervision-institutions',
+        component: () => import('@/views/supervisor/views/InstitutionRegistryView.vue'),
+        meta: { title: 'Institution Registry - AMLGuard' },
+      },
+      {
+        path: 'risk-profiling',
+        name: 'supervision-risk-profiling',
+        component: () => import('@/views/supervisor/views/RiskProfilingView.vue'),
+        meta: { title: 'Risk Profiling - AMLGuard' },
+      },
+      {
+        path: 'surveillance',
+        name: 'supervision-surveillance',
+        component: () => import('@/views/supervisor/views/SurveillanceDashboardView.vue'),
+        meta: { title: 'Surveillance & Monitoring - AMLGuard' },
+      },
+      {
+        path: 'inspections',
+        name: 'supervision-inspections',
+        component: () => import('@/views/supervisor/views/InspectionTrackerView.vue'),
+        meta: { title: 'Inspections - AMLGuard' },
+      },
+      {
+        path: 'reports',
+        name: 'supervision-reports',
+        component: () => import('@/views/supervisor/views/ReportingExportView.vue'),
+        meta: { title: 'Reporting & Export - AMLGuard' },
+      },
+      {
+        path: 'settings',
+        name: 'supervision-settings',
+        component: () => import('@/views/supervisor/views/SettingsView.vue'),
+        meta: { title: 'Settings - AMLGuard' },
+      },
+      {
+        path: 'users',
+        name: 'supervision-users',
+        component: () => import('@/views/supervisor/views/UserManagementView.vue'),
+        meta: { title: 'User Management - AMLGuard' },
+      },
+      {
+        path: 'audit-logs',
+        name: 'supervision-audit-logs',
+        component: () => import('@/views/supervisor/views/AuditLogsView.vue'),
+        meta: { title: 'Audit Logs - AMLGuard' },
+      },
+    ],
   },
   // 404 Catch-all route
   {

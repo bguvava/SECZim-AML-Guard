@@ -14,6 +14,10 @@ import {
   Bell,
   Shield,
   ClipboardCheck,
+  Eye,
+  TrendingUp,
+  Search,
+  FileCheck,
 } from 'lucide-vue-next'
 import type { NavigationItem } from '@/types/layout'
 
@@ -88,36 +92,40 @@ export const supervisorNavigation: NavigationItem[] = [
     route: '/supervisor/dashboard',
   },
   {
-    id: 'supervisor-entities',
-    label: 'My Entities',
+    id: 'supervision-institutions',
+    label: 'Institutions',
     icon: Building2,
-    route: '/supervisor/entities',
-    badge: '12',
+    route: '/supervision/institutions',
   },
   {
-    id: 'supervisor-assessments',
-    label: 'Risk Assessments',
-    icon: ClipboardCheck,
-    route: '/supervisor/assessments',
+    id: 'supervision-risk-profiling',
+    label: 'Risk Profiling',
+    icon: AlertTriangle,
+    route: '/supervision/risk-profiling',
   },
   {
-    id: 'supervisor-reports',
-    label: 'Reports',
-    icon: FileText,
-    route: '/supervisor/reports',
+    id: 'supervision-surveillance',
+    label: 'Surveillance',
+    icon: Eye,
+    route: '/supervision/surveillance',
   },
   {
-    id: 'supervisor-alerts',
-    label: 'Alerts',
-    icon: Bell,
-    route: '/supervisor/alerts',
-    badge: '3',
-  },
-  {
-    id: 'supervisor-analytics',
+    id: 'supervision-analytics',
     label: 'Analytics',
-    icon: BarChart3,
-    route: '/supervisor/analytics',
+    icon: TrendingUp,
+    route: '/supervision/analytics',
+  },
+  {
+    id: 'supervision-inspections',
+    label: 'Inspections',
+    icon: Search,
+    route: '/supervision/inspections',
+  },
+  {
+    id: 'supervision-reports',
+    label: 'Reports',
+    icon: FileCheck,
+    route: '/supervision/reports',
   },
 ]
 
